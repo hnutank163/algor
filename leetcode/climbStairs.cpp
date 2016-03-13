@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <boost/timer.hpp> 
 using namespace std;
 class Solution
 {
@@ -21,12 +22,45 @@ public:
         delete [] a;
         return re;
     }
+
+    int climbStairs2(int n)
+    {
+        int a = 1;
+        int b = 1;
+        while(n--)
+        {
+            a = (b+=a) - a;
+        }
+
+        return a;
+    }
+
+    int climbStairs3(int n)
+    {
+        int a = 1;
+        int b = 1;
+        while(n--)
+        {
+            b = a+b;
+            a = b-a;
+        }
+
+        return a;
+    }
 };
 
 
-int main(int argc, char ** argv)
+int main(int , char ** argv)
 {
+    boost::timer tm;
     Solution sl;
     cout<<sl.climbStairs(atoi(argv[1]))<<endl;
+    cout<<tm.elapsed()<<endl;
+    tm.restart();
+    cout<<sl.climbStairs2(atoi(argv[1]))<<endl;
+    cout<<tm.elapsed()<<endl;
+    tm.restart();
+    cout<<sl.climbStairs3(atoi(argv[1]))<<endl;
+    cout<<tm.elapsed()<<endl;
     return 0;
 }
