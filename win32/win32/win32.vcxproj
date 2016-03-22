@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\BinaryTree.hpp" />
     <ClInclude Include="..\..\src\common.h" />
+    <ClInclude Include="..\..\src\derived.h" />
     <ClInclude Include="..\..\src\List.hpp" />
     <ClInclude Include="..\..\src\Stack.hpp" />
     <ClInclude Include="..\..\src\Vector.hpp" />
