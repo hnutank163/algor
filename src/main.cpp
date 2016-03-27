@@ -2,6 +2,8 @@
 #include "common.h"
 #include "Vector.hpp"
 #include "Stack.hpp"
+#include "BinaryTree.hpp"
+#include "derived.h"
 using namespace std;
 #define LEN(a) sizeof(a)/sizeof(int)
 
@@ -36,30 +38,27 @@ int polish(char *p)
 {
     Stack<int> st;
     char * q = p;
-    while( *q )
-    {
+    while( *q ) {
         if( *q >= '0' && *q <= '9' )
             st.push(*q - '0');
-        else
-        {
+        else {
             int a = st.top();
             st.pop();
             int b = st.top();
             st.pop();
-            switch(*q)
-            {
-                case '+':
-                    st.push(a+b);
-                    break;
-                case '-':
-                    st.push(a-b);
-                    break;
-                case '*':
-                    st.push(a*b);
-                    break;
-                case '/':
-                    st.push(a/b);
-                    break;
+            switch(*q) {
+            case '+':
+                st.push(a+b);
+                break;
+            case '-':
+                st.push(a-b);
+                break;
+            case '*':
+                st.push(a*b);
+                break;
+            case '/':
+                st.push(a/b);
+                break;
             }
         }
         ++q;
@@ -68,15 +67,18 @@ int polish(char *p)
     return st.top();
 }
 
-int main(int ,char **)
+int main(int, char **)
 {
-    int a[] = {1,-23,3,4,-5,6,7,-8,9};
-    cout<<max_nums_1(a, LEN(a))<<endl;
-    cout<<max_nums_2(a, LEN(a))<<endl;;
-    Vector_test();
-    Stack_test();
+    Derived_test();
+    /*  int a[] = { 1,-23,3,4,-5,6,7,-8,9 };
+      cout << max_nums_1(a, LEN(a)) << endl;
+      cout << max_nums_2(a, LEN(a)) << endl;;
+      Vector_test();
+      Stack_test();
 
-    char *p = "6532+8*+3+*";
-    cout<<p<<" polish "<< polish(p)<<endl;
+      char *p = "6532+8*+3+*";
+      cout << p << " polish " << polish(p) << endl;
+      cout << "binary tree test\n";
+      BinaryTree_Test();*/
     return 0;
 }

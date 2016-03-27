@@ -7,19 +7,31 @@ class BinaryTree
 {
 public:
     BinaryTree ():root(NULL) {}
-    virtual ~BinaryTree ();
+    virtual ~BinaryTree() {};
     bool contains(T t)
     {
         return contains(t, root);
     }
 
-
-    void insert(T &t)
+    void insert(const T &t)
     {
-        insert(t, root):
-        }
-    private:
-        struct BinaryNode {
+        insert(t, root);
+    }
+
+    void preorder()
+    {
+        preorder(root);
+    }
+    void inorder()
+    {
+        inorder(root);
+    }
+    void postorder()
+    {
+        postorder(root);
+    }
+private:
+    struct BinaryNode {
         T element;
         BinaryNode *lchild;
         BinaryNode *rchild;
@@ -55,10 +67,10 @@ public:
         return t;
     }
 
-    void insert(T &el, BinaryNode *&t)
+    void insert(const T &el, BinaryNode *&t)
     {
         if( t == NULL )
-            t = new BinaryNode(t);
+            t = new BinaryNode(el);
         else if( el<t->element )
             insert(el, t->lchild);
         else
@@ -85,10 +97,49 @@ public:
         }
     }
 
+    void preorder(BinaryNode *t)
+    {
+        if (t == NULL)
+            return;
+        std::cout << t->element << endl;
+        preorder(t->lchild);
+        preorder(t->rchild);
+    }
+
+    void inorder(BinaryNode *t)
+    {
+        if (t==NULL)
+            return;
+        inorder(t->lchild);
+        std::cout << t->element << endl;
+        inorder(t->rchild);
+    }
+
+    void postorder(BinaryNode *t)
+    {
+        if (t==NULL)
+            return;
+        postorder(t->lchild);
+        postorder(t->rchild);
+        std::cout << t->element << endl;
+    }
 };
 
 void BinaryTree_Test()
 {
+    BinaryTree<int> bt;
+    bt.insert(2);
+    bt.insert(3);
+    bt.insert(1);
+    bt.insert(4);
+    bt.insert(5);
+    bt.insert(0);
+    cout << "preorder\n";
+    bt.preorder();
+    cout << "inorder\n";
+    bt.inorder();
+    cout << "postorder\n";
+    bt.postorder();
 
 }
 #endif
