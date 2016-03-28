@@ -1,0 +1,6 @@
+project(main)
+set(HEADER_FILE BinaryTree.hpp HashTable.hpp Stack.hpp List.hpp common.h)
+set(SRC_FILE common.cpp main.cpp)
+#message("src bin path: " ${PROJECT_BINARY_PATH})
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_PATH}/../build)
+add_executable(main ${HEADER_FILE} ${SRC_FILE})
