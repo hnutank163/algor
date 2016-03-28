@@ -1,4 +1,5 @@
 #include <iostream>
+#include "HashTable.hpp"
 #include "common.h"
 #include "Vector.hpp"
 #include "Stack.hpp"
@@ -69,7 +70,8 @@ int polish(char *p)
 
 int main(int, char **)
 {
-    Derived_test();
+//    unordered_map_test();
+    HashTable_test();
     /*  int a[] = { 1,-23,3,4,-5,6,7,-8,9 };
       cout << max_nums_1(a, LEN(a)) << endl;
       cout << max_nums_2(a, LEN(a)) << endl;;
