@@ -90,6 +90,6 @@ int main(int, char **)
     cout << p << " polish " << polish(p) << endl;
     cout << "binary tree test\n";
     BinaryTree_Test();*/
-    hashmap_test();
+  //  unordered_map_test();
     return 0;
 }

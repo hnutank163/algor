@@ -1,5 +1,6 @@
 #ifndef _HASH_TABLE_H
 #define _HASH_TABLE_H
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -7,135 +8,191 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <list>
+
 using namespace std;
 
-template<typename KEY, typename VALUE>
-struct HashNode
-{
-    KEY key;
-    VALUE val;
-    HashNode<KEY,VALUE> *next;
-    HashNode<KEY,VALUE>(const KEY k=KEY(), const VALUE  v=VALUE(), HashNode<KEY,VALUE> *_next=NULL):key(k),val(v),next(_next){
-        cout<<"enter hasnode\n";
+template<class Key,
+        class T,
+        class Hash=std::hash<Key>,
+        class KeyEqual = std::equal_to<Key> >
+class HashTable {
+
+public:
+    typedef std::pair<Key, T> value_type;
+    typedef value_type *iterator;
+    typedef Key key_type;
+    typedef Hash hash_func;
+    typedef KeyEqual equal_func;
+
+private:
+    size_t size_;
+    size_t capacity_;
+    key_type empty_key;
+    value_type *buckets_;
+
+private:
+    void init_bucket() {
+        delete[]buckets_;
+        buckets_ = new value_type[capacity_]();
     }
-    HashNode<KEY,VALUE> & operator=(const HashNode<KEY,VALUE> &rhs){
-        this->key = rhs.key;
-        this->val = rhs.val;
-        next = rhs->next;
+
+    value_type *_insert(const value_type &v) {
+        const key_type &key = v.first;
+
+    }
+
+    void find(const key_type &key) {
+        size_t hash_index = hash_func(key);
+
+    }
+
+public:
+    HashTable(size_t capacity = 32) : size_(0), capacity_(capacity), empty_key(key_type()), buckets_(nullptr) {
+        init_bucket();
+    }
+
+    HashTable &operator=(const HashTable &ht) {
+        size_ = ht.size_;
+        capacity_ = ht.capacity_;
+        init_bucket();
+
         return *this;
     }
 };
-template<typename KEY, typename VALUE>
-class HashTable
-{
+
+template<class Key,
+        class T,
+        class Hash=std::hash<Key>,
+        class equal=std::equal_to<Key> >
+class HashMap {
 private:
-    vector< HashNode<KEY,VALUE> * > table;
+    typedef T map_type;
+    typedef Key key_type;
+    typedef std::pair<Key, T> value_type;
+    typedef value_type *iterator;
+    typedef Hash hash_fn;
+    typedef equal equal_fn;
+private:
+    vector<list<value_type> > table;
+    size_t size_;
+    size_t bucket_count;
+    hash_fn hash_func;
+    equal_fn equal_func;
 public:
-    HashTable()
-    {
-        table.resize(10);
-        for (auto i : table) {
-            i = NULL;
-        }
+    HashMap() : size_(0), bucket_count(32), hash_func(), equal_func() {
+        table.resize(32);
     }
-    bool insert(const HashNode<KEY,VALUE> &node)
-    {
-        size_t hash_code = node.key.hash();
-        cout<<"hash code "<<hash_code<<endl;
-        if(table.size()<hash_code || table[hash_code] == NULL)
-        {
-            cout<<"insert NULL\n";
-            table[hash_code] = new HashNode<KEY,VALUE>(node.key, node.val);
-        }
-        else
-        {
-            cout<<"insert not NULL\n";
-            HashNode<KEY,VALUE> *old_node = table[hash_code];
-            table[hash_code] = new HashNode<KEY,VALUE>(node.key, node.val, old_node);
+
+    void rehash() {
+        bucket_count *= 2;
+        vector<list<value_type> > old_table = table;
+        table.resize(bucket_count);
+        for (int i = 0; i < bucket_count; ++i) {
+            table[i].assign(old_table[i].begin(), old_table[i].end());
         }
     }
 
-    VALUE  operator[] (const KEY &key)
-    {
-        size_t hash_code = key.hash();
-        HashNode<KEY,VALUE> *node = table[hash_code];
-        if(node)
-        {
-            while(node)
-            {
-                if (node->key == key)
-                    return node->val;
-                node = node->next;
-            }
+    value_type insert(const value_type &val) {
+        size_t hash_code = hash_func(val.first) % bucket_count;
+        if (hash_code > bucket_count)
+            rehash();
+        ++size_;
+        table[hash_code].push_front(std::make_pair(val.first, val.second));
+    }
+
+    map_type &operator[](const key_type &key) {
+        size_t hash_code = hash_func(key) % bucket_count;
+        for (auto l: table[hash_code]) {
+            if (l.first == key)
+                return l.second;
         }
-        return VALUE();
+        table[hash_code].push_front(std::make_pair(key, map_type()));
+        return table[hash_code].begin()->second;
+    }
+
+    map_type &operator[](const key_type &key) const {
+        size_t hash_code = hash_func(key) % bucket_count;
+        for (auto l: table[hash_code]) {
+            if (l.first == key)
+                return l.second;
+        }
+        table[hash_code].push_front(std::make_pair(key, map_type()));
+        return table[hash_code].begin()->first;
+    }
+
+    friend ostream &operator<<(ostream &os, const HashMap &hm) {
+        for (auto l: hm.table) {
+            os << "[";
+            for (auto p: l) {
+                os << p.first << " : " << p.second << " ";
+            }
+            os << "]\n";
+        }
+        return os;
     }
 };
 
-struct HashObj
-{
+struct HashObj {
     string s1;
-    HashObj(string s=NULL):s1(s){}
-    bool operator==(const HashObj &obj) const
-    {
+
+    HashObj(string s = NULL) : s1(s) { }
+
+    bool operator==(const HashObj &obj) const {
         return s1 == obj.s1;
     }
 
-    friend ostream & operator<<(ostream &os, const HashObj &obj)
-    {
-        os<<obj.s1;
+    friend ostream &operator<<(ostream &os, const HashObj &obj) {
+        os << obj.s1;
         return os;
     }
 
-    size_t hash() const
-    {
-        return (s1.length()+s1[0])/131;
+    size_t hash() const {
+        return (s1.length() + s1[0]) / 131;
     }
+
+
 };
 
-namespace std
-{
+namespace std {
     template<>
-    struct hash<HashObj>
-    {
-        std::size_t operator()(const HashObj &) const
-        {
+    struct hash<HashObj> {
+        std::size_t operator()(const HashObj &) const {
             return 1;
         }
     };
 }
-void unordered_map_test()
-{
-    unordered_map<HashObj, string> um( { {HashObj("aa"),"1"}, {HashObj("bb"),"2"}});
-    um[HashObj("cc")] = "1";
-    um[HashObj("dd")] = "2";
-    um[HashObj("ee")] = "5";
-    um[HashObj("ff")] = "6";
 
+void unordered_map_test() {
+    unordered_map<HashObj, string> um({{HashObj("aa"), "1"},
+                                       {HashObj("bb"), "2"}});
+
+    unordered_map<HashObj, string>::iterator iter = um.begin();
+    for (int i = 0; i < um.size(); ++i) {
+        cout << (*iter).first << " : " << (*iter).second << endl;
+        ++iter;
+    }
     for (auto var : um) {
-        cout<<var.first<<" "<<var.second<<endl;
+        cout << var.first << " " << var.second << endl;
     }
 
-    cout<<um[HashObj("df")]<<endl;
     //um.rehash(20);
-    cout<<um.size()<<" "<<um.bucket_count()<<endl;
+    cout << um.size() << " " << um.bucket_count() << endl;
 }
 
-void HashTable_test()
-{
-    HashTable<HashObj, int> ht;
-    ht.insert(HashNode<HashObj,int>(HashObj("one"),1));
-    ht.insert(HashNode<HashObj,int>(HashObj("two"),2));
-    cout<<ht[HashObj("one")]<<" "<<ht[HashObj("two")]<<endl;
-    try
-    {
-        vector<int> vi;
-        vi.resize(10);
-        cout<<vi[1]<<endl;
+struct myhash {
+    size_t operator()(const string &x) const {
+        std::hash<string>()(x);
+        /* your code here, e.g. "return hash<int>()(x.value);" */
     }
-    catch(std::exception &e)
-    {
-        cout<<e.what()<<endl;
-    }
+};
+
+void HashTable_test() {
+    HashMap<string, int, myhash> hm;
+    hm["one"] = 1;
+    hm["two"] = 2;
+    hm["three"] = 3;
+    cout << hm;
 }
+
 #endif
