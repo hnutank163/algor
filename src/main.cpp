@@ -5,6 +5,7 @@
 #include "Stack.hpp"
 #include "BinaryTree.hpp"
 #include "derived.h"
+#include "HashTable.hpp"
 using namespace std;
 #define LEN(a) sizeof(a)/sizeof(int)
 
@@ -16,52 +17,58 @@ void Vector_test()
     vi.push_back(3);
     print(vi.begin(), vi.end());
     vi.pop_back();
-    cout<<"back "<<vi.back()<<endl;
+    cout << "back " << vi.back() << endl;
     print(vi.begin(), vi.end());
 }
 
 void Stack_test()
 {
-    cout<<"stack test\n";
+    cout << "stack test\n";
     Stack<int> st;
     st.push(1);
     st.push(2);
     st.push(3);
-    cout<<st<<endl;
-    cout<<st.top()<<endl;
+    cout << st << endl;
+    cout << st.top() << endl;
     st.pop();
-    cout<<st.top()<<endl;
-    cout<<st<<endl;
-    cout<<"end stack test\n";
+    cout << st.top() << endl;
+    cout << st << endl;
+    cout << "end stack test\n";
 }
 
 int polish(char *p)
 {
     Stack<int> st;
     char * q = p;
-    while( *q ) {
-        if( *q >= '0' && *q <= '9' )
+
+    while (*q) {
+        if (*q >= '0' && *q <= '9')
             st.push(*q - '0');
         else {
             int a = st.top();
             st.pop();
             int b = st.top();
             st.pop();
-            switch(*q) {
-            case '+':
-                st.push(a+b);
-                break;
-            case '-':
-                st.push(a-b);
-                break;
-            case '*':
-                st.push(a*b);
-                break;
-            case '/':
-                st.push(a/b);
-                break;
+
+            switch (*q) {
+                case '+':
+                    st.push(a + b);
+                    break;
+
+                case '-':
+                    st.push(a - b);
+                    break;
+
+                case '*':
+                    st.push(a * b);
+                    break;
+
+                case '/':
+                    st.push(a / b);
+                    break;
             }
         }
+
         ++q;
     }
 
@@ -72,15 +79,17 @@ int main(int, char **)
 {
 //    unordered_map_test();
     HashTable_test();
-    /*  int a[] = { 1,-23,3,4,-5,6,7,-8,9 };
-      cout << max_nums_1(a, LEN(a)) << endl;
-      cout << max_nums_2(a, LEN(a)) << endl;;
-      Vector_test();
-      Stack_test();
+    //Derived_test();
+    /*   int a[] = { 1, -23, 3, 4, -5, 6, 7, -8, 9 };
+    cout << max_nums_1(a, LEN(a)) << endl;
+    cout << max_nums_2(a, LEN(a)) << endl;;
+    Vector_test();
+    Stack_test();
 
-      char *p = "6532+8*+3+*";
-      cout << p << " polish " << polish(p) << endl;
-      cout << "binary tree test\n";
-      BinaryTree_Test();*/
+    char *p = "6532 + 8 * +3 +*";
+    cout << p << " polish " << polish(p) << endl;
+    cout << "binary tree test\n";
+    BinaryTree_Test();*/
+    hashmap_test();
     return 0;
 }
