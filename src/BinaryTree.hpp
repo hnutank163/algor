@@ -124,6 +124,20 @@ public:
         cout << endl;
     }
 
+    void sort(T *begin, T *end) {
+        BinaryTree bt;
+        for (T *pt = begin; pt != end; ++pt) {
+            bt.insert(*pt);
+        }
+        T *pt = begin;
+        while (pt != end) {
+            BinaryNode *node = findMin(bt.root);
+            *(begin++) = node->element;
+            bt.remove(node->element);
+            ++pt;
+        }
+    }
+
 private:
     struct BinaryNode {
         T element;
@@ -211,6 +225,8 @@ private:
         postorder(t->rchild);
         std::cout << t->element << " ";
     }
+
+
 };
 
 void BinaryTree_Test() {
@@ -238,8 +254,14 @@ void BinaryTree_Test() {
     cout << "level order\n";
     bt.level_order();
     bt.remove(2);
-    cout<<"after remove 2\n";
+    cout << "after remove 2\n";
     bt.inorder_no_recursive();
+    cout << "test sort\n";
+    int a[] = {2, 3, 1, 5, 4};
+    bt.sort(a, a + 5);
+    for(auto i:a)
+        cout<<i<<" ";
+    cout<<endl;
 }
 
 #endif
