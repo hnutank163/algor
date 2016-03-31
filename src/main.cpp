@@ -1,16 +1,18 @@
 #include <iostream>
+#include <cmath>
 #include "HashTable.hpp"
 #include "common.h"
 #include "Vector.hpp"
 #include "Stack.hpp"
 #include "BinaryTree.hpp"
+#include "BinaryHeap.hpp"
 #include "derived.h"
 #include "HashTable.hpp"
+
 using namespace std;
 #define LEN(a) sizeof(a)/sizeof(int)
 
-void Vector_test()
-{
+void Vector_test() {
     Vector<int> vi;
     vi.push_back(1);
     vi.push_back(2);
@@ -21,8 +23,7 @@ void Vector_test()
     print(vi.begin(), vi.end());
 }
 
-void Stack_test()
-{
+void Stack_test() {
     cout << "stack test\n";
     Stack<int> st;
     st.push(1);
@@ -36,10 +37,9 @@ void Stack_test()
     cout << "end stack test\n";
 }
 
-int polish(char *p)
-{
+int polish(char *p) {
     Stack<int> st;
-    char * q = p;
+    char *q = p;
 
     while (*q) {
         if (*q >= '0' && *q <= '9')
@@ -75,8 +75,23 @@ int polish(char *p)
     return st.top();
 }
 
-int main(int, char **)
-{
+void generate_big_array(int num, int size, int **a) {
+    for (int i = 0; i < size; ++i) {
+        int n = rand();
+        for (int j = 0; j < num; ++j)
+            *(a + j)[i] = n;
+    }
+}
+
+int main(int, char **) {
+    int nums = 4;
+    int size = 10000;
+    int **a = new int *();
+    for (int i = 0; i < nums; ++i)
+        *a = new int[size];
+
+    generate_big_array(nums,size,a);
+    timer tm;
 //    unordered_map_test();
 //    HashTable_test();
     //Derived_test();
@@ -90,7 +105,11 @@ int main(int, char **)
     cout << p << " polish " << polish(p) << endl;
     cout << "binary tree test\n";
     BinaryTree_Test();*/
-  //  unordered_map_test();
-    BinaryTree_Test();
+    //  unordered_map_test();
+    heap_sort(a[0],a[0]+size);
+    cout << tm.elapsed() << endl;
+    tm.start();
+    bubble_sort(a[1], a[1] + size);
+    cout << tm.elapsed() << endl;
     return 0;
 }
