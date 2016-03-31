@@ -78,7 +78,7 @@ int polish(char *p)
 int main(int, char **)
 {
 //    unordered_map_test();
-    HashTable_test();
+//    HashTable_test();
     //Derived_test();
     /*   int a[] = { 1, -23, 3, 4, -5, 6, 7, -8, 9 };
     cout << max_nums_1(a, LEN(a)) << endl;
@@ -91,5 +91,6 @@ int main(int, char **)
     cout << "binary tree test\n";
     BinaryTree_Test();*/
   //  unordered_map_test();
+    BinaryTree_Test();
     return 0;
 }

@@ -11,6 +11,7 @@
 #include <list>
 
 using namespace std;
+struct myhash;
 
 template<class Key,
         class T,
@@ -163,6 +164,8 @@ namespace std {
     };
 }
 
+void unordered_map_test();
+
 void unordered_map_test() {
     unordered_map<HashObj, string> um({{HashObj("aa"), "1"},
                                        {HashObj("bb"), "2"}});
@@ -192,7 +195,10 @@ void HashTable_test() {
     hm["one"] = 1;
     hm["two"] = 2;
     hm["three"] = 3;
+    hm.insert(make_pair("five", 5));
     cout << hm;
+    cout << std::hash<string>()("google") << endl;
 }
+
 
 #endif
