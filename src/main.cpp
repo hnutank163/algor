@@ -1,5 +1,7 @@
 #include <iostream>
+#include <algorithm>
 #include <cmath>
+#include <cassert>
 #include "HashTable.hpp"
 #include "common.h"
 #include "Vector.hpp"
@@ -79,37 +81,58 @@ void generate_big_array(int num, int size, int **a) {
     for (int i = 0; i < size; ++i) {
         int n = rand();
         for (int j = 0; j < num; ++j)
-            *(a + j)[i] = n;
+            a[j][i] = n;
     }
 }
 
-int main(int, char **) {
-    int nums = 4;
-    int size = 10000;
-    int **a = new int *();
-    for (int i = 0; i < nums; ++i)
-        *a = new int[size];
+void sort_correctness_test() {
+    int a[4][10] = {{2, 1, 3, 5, 4, 7, 6, 8, 10, 9},
+                    {2, 1, 3, 5, 4, 7, 6, 8, 10, 9},
+                    {2, 1, 3, 5, 4, 7, 6, 8, 10, 9},
+                    {2, 1, 3, 5, 4, 7, 6, 8, 10, 9}};
+    SORT::sort_heap(a[0], a[0] + 10);
+    heap_sort2(a[1], a[1] + 10);
+    std::sort(a[2], a[2] + 10);
+    heap_sort(a[3], a[3] + 10);
+    print(a[0], a[0] + 10);
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 10; ++j) {
+            try {
+                assert((1 + j) == a[i][j]);
+            }
+            catch (std::exception &e) {
+                cout << e.what() << endl;
+            }
+        }
+    }
+}
 
-    generate_big_array(nums,size,a);
+void sort_speed_test() {
+    int num = 4;
+    int size = 3000000;
+    int **a = new int *[num];
+    for (int i = 0; i < num; ++i)
+        a[i] = new int[size];
+
+    generate_big_array(num, size, a);
     timer tm;
-//    unordered_map_test();
-//    HashTable_test();
-    //Derived_test();
-    /*   int a[] = { 1, -23, 3, 4, -5, 6, 7, -8, 9 };
-    cout << max_nums_1(a, LEN(a)) << endl;
-    cout << max_nums_2(a, LEN(a)) << endl;;
-    Vector_test();
-    Stack_test();
-
-    char *p = "6532 + 8 * +3 +*";
-    cout << p << " polish " << polish(p) << endl;
-    cout << "binary tree test\n";
-    BinaryTree_Test();*/
-    //  unordered_map_test();
-    heap_sort(a[0],a[0]+size);
+    std::make_heap(a[0], a[0] + size);
+    std::sort_heap(a[0], a[0] + size);
     cout << tm.elapsed() << endl;
     tm.start();
-    bubble_sort(a[1], a[1] + size);
+    SORT::sort_heap(a[1], a[1] + size);
     cout << tm.elapsed() << endl;
+    tm.start();
+    heap_sort(a[2], a[2] + size);
+    cout << tm.elapsed() << endl;
+    tm.start();
+    std::sort(a[3], a[3] + size);
+    cout << tm.elapsed() << endl;
+}
+
+int main(int, char **) {
+    sort_correctness_test();
+    sort_speed_test();
+//       BinaryHeap_test();
     return 0;
 }

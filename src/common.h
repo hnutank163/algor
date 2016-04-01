@@ -54,83 +54,163 @@ void bubble_sort(Iterator begin, Iterator end) {
     }
 }
 
-template<class Iterator>
-void quick_sort(Iterator begin, Iterator end)
-{
-    Iterator mid = begin+(end-begin)/2;
-    Iterator first = begin;
-    Iterator last = end-1;
-    while(first<last)
-    {
-        while(first<mid && *first<=*mid)
-            ++first;
+namespace SORT {
+    template<class Iterator>
+    void quick_sort(Iterator begin, Iterator end);
 
-        while(last>mid && *last>=*mid)
-            --last;
+    template<class Iterator>
+    void merge_sort(Iterator begin, Iterator end);
 
-        if( first<last )
-        {
-            Swap(*first, *last);
-            if(first == mid)
-                mid = last;
-            else if(last == mid)
-                mid = first;
+    template<class Iterator, class Object>
+    void merge_sort_bridge(Iterator begin, Iterator end, const Object obj);
+
+    template<class Iterator, class Object>
+    void _merge_sort_bridge(Iterator begin, Iterator end, Object *array);
+
+    template<class Iterator, class Object>
+    void merge_two_array(Iterator begin, Iterator mid, Iterator end, Object *tmp);
+
+//
+    void heapsort(int *a, int n);
+
+    void build_maxheap(int *a, int n);
+
+    void max_heap(int *a, int i, int n);
+
+//
+    template<class T>
+    void heapUp(T *begin, T *iter);
+
+    template<class T>
+    void heapDown(T *begin, T *end, T *iter);
+
+    template<class T>
+    void heapDown(T *begin, T *end, T *iter) {
+        T *left = iter + (iter - begin) + 1;
+        T *right = iter + (iter - begin) + 2;
+        T *minIndex = left;
+        if (right < end) {
+            if (*right > *left)
+                minIndex = right;
+        }
+        if (minIndex < end && *iter < *minIndex) {
+            T t = std::move(*iter);
+            *iter = std::move(*minIndex);
+            *minIndex = std::move(t);
+  //          std::swap(*iter, *minIndex);
+            heapDown(begin, end, minIndex);
         }
     }
-    if(begin < mid-1)
-        quick_sort(begin, mid);
-    if(mid+1 < end-1)
-        quick_sort(mid+1, end);
-}
+//
 
-template<class Iterator>
-void merge_sort(Iterator begin, Iterator end)
-{
-    merge_sort_brige(begin, end-1, *begin);
-}
-
-template<class Iterator, class Object>
-void merge_sort_brige(Iterator begin, Iterator end, const Object obj) //obj is used to translate type Object
-{
-    int len = end - begin + 1;
-    Object *array = new Object[len];
-    _merge_sort_brige(begin, end,  array);
-    delete [] array;
-}
-
-template<class Iterator, class Object>
-void _merge_sort_brige(Iterator begin, Iterator end, Object * array)
-{
-    if( begin < end )
-    {
-        Iterator mid = begin + (end-begin)/2;
-        _merge_sort_brige(begin, mid, array);
-        _merge_sort_brige(mid+1, end, array);
-        merge_two_array(begin, mid, end, array);
+    template<class T>
+    void heapUp(T *begin, T *iter) {
+        T *parent = begin + (iter - begin - 1) / 2;
+        if (*parent < *iter) {
+            T t = std::move(*parent);
+            *parent = std::move(*iter);
+            *iter = std::move(t);
+   //         std::swap(*parent, *iter);
+            heapUp(begin, parent);
+        }
     }
-}
 
-template<class Iterator, class Object>
-void merge_two_array(Iterator begin, Iterator mid, Iterator end, Object * tmp)
-{
-     Iterator i = begin;
-     Iterator j = mid+1;
-     Object *before = tmp;
-     while( i<=mid && j<=end )
-     {
-         if( *i < *j )
-              *(tmp++) = *(i++);
-         else
-             *(tmp++) = *(j++);
-     }
+    template<class T>
+    void make_heap(T *begin, T *end) {
+        for (T *iter = begin + (end - begin) / 2; iter < end; ++iter) {
+            heapUp(begin, iter);
+        }
+    }
 
-     while( i<=mid )
-          *(tmp++) = *(i++);
+    template<class T>
+    void sort_heap(T *begin, T *end) {
+//        timer tm;
+        make_heap(begin, end);
+//        std::cout<<"make heap time "<<tm.elapsed()<<std::endl;
+//        std::cout<<"after make heap"<<std::endl;
+//        for(T *i=begin; i!=end; ++i)
+//            std::cout<<*i<<" ";
+//        std::cout<<std::endl;
+        for (T *iter = end - 1; iter > begin; --iter) {
+           // std::swap(*iter, *begin);
+            T temp = std::move(*iter);
+            *iter = std::move(*begin);
+            *begin = std::move(temp);
+            heapDown(begin, iter, begin);
+        }
+    }
 
-     while( j<=mid )
-         *(tmp++) = *(j++);
 
-     while(before < tmp)
-         *(begin++) = *(before++);
+    template<class Iterator, class Object>
+    void merge_two_array(Iterator begin, Iterator mid, Iterator end, Object *tmp) {
+        Iterator i = begin;
+        Iterator j = mid + 1;
+        Object *before = tmp;
+        while (i <= mid && j <= end) {
+            if (*i < *j)
+                *(tmp++) = *(i++);
+            else
+                *(tmp++) = *(j++);
+        }
+
+        while (i <= mid)
+            *(tmp++) = std::move(*(i++));
+
+        while (j <= mid)
+            *(tmp++) = std::move(*(j++));
+
+        while (before < tmp)
+            *(begin++) = std::move(*(before++));
+    }
+
+    template<class Iterator, class Object>
+    void _merge_sort_bridge(Iterator begin, Iterator end, Object *array) {
+        if (begin < end) {
+            Iterator mid = begin + (end - begin) / 2;
+            _merge_sort_bridge(begin, mid, array);
+            _merge_sort_bridge(mid + 1, end, array);
+            merge_two_array(begin, mid, end, array);
+        }
+    }
+
+    template<class Iterator, class Object>
+    void merge_sort_bridge(Iterator begin, Iterator end, const Object obj) {
+        int len = end - begin + 1;
+        Object *array = new Object[len];
+        _merge_sort_bridge(begin, end, array);
+        delete[] array;
+    }
+
+    template<class Iterator>
+    void merge_sort(Iterator begin, Iterator end) {
+        merge_sort_bridge(begin, end - 1, *begin);
+    }
+
+    template<class Iterator>
+    void quick_sort(Iterator begin, Iterator end) {
+        Iterator mid = begin + (end - begin) / 2;
+        Iterator first = begin;
+        Iterator last = end - 1;
+        while (first < last) {
+            while (first < mid && *first <= *mid)
+                ++first;
+
+            while (last > mid && *last >= *mid)
+                --last;
+
+            if (first < last) {
+                std::swap(*first, *last);
+                if (first == mid)
+                    mid = last;
+                else if (last == mid)
+                    mid = first;
+            }
+        }
+        if (begin < mid - 1)
+            quick_sort(begin, mid);
+        if (mid + 1 < end - 1)
+            quick_sort(mid + 1, end);
+    }
+
 }
 #endif
