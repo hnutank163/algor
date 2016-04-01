@@ -8,6 +8,7 @@
 #include "Stack.hpp"
 #include "BinaryTree.hpp"
 #include "BinaryHeap.hpp"
+#include "Deque.hpp"
 #include "derived.h"
 #include "HashTable.hpp"
 
@@ -93,7 +94,8 @@ void sort_correctness_test() {
     SORT::sort_heap(a[0], a[0] + 10);
     heap_sort2(a[1], a[1] + 10);
     std::sort(a[2], a[2] + 10);
-    heap_sort(a[3], a[3] + 10);
+    BinaryTree<int> bt;
+    bt.sort(a[3],a[3]+10);
     print(a[0], a[0] + 10);
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 10; ++j) {
@@ -123,7 +125,8 @@ void sort_speed_test() {
     SORT::sort_heap(a[1], a[1] + size);
     cout << tm.elapsed() << endl;
     tm.start();
-    heap_sort(a[2], a[2] + size);
+    BinaryTree<int> bt;
+    bt.sort(a[2], a[2] + size);
     cout << tm.elapsed() << endl;
     tm.start();
     std::sort(a[3], a[3] + size);
@@ -131,8 +134,8 @@ void sort_speed_test() {
 }
 
 int main(int, char **) {
-    sort_correctness_test();
-    sort_speed_test();
-//       BinaryHeap_test();
+//    sort_correctness_test();
+//    sort_speed_test();
+    Deque_test();
     return 0;
 }

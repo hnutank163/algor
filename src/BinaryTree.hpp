@@ -5,6 +5,7 @@
 #include <stack>
 #include <deque>
 #include <cstdlib>
+#include "common.h"
 
 using namespace std;
 
@@ -126,16 +127,25 @@ public:
 
     void sort(T *begin, T *end) {
         BinaryTree bt;
+        timer tm;
         for (T *pt = begin; pt != end; ++pt) {
             bt.insert(*pt);
         }
-        T *pt = begin;
-        while (pt != end) {
-            BinaryNode *node = findMin(bt.root);
+        cout << "insert time " << tm.elapsed() << endl;
+        tm.start();
+        BinaryNode *node = bt.root;
+        stack<BinaryNode *> st;
+        while (!st.empty() || node) {
+            while (node) {
+                st.push(node);
+                node = node->lchild;
+            }
+            node = st.top();
             *(begin++) = node->element;
-            bt.remove(node->element);
-            ++pt;
+            st.pop();
+            node = node->rchild;
         }
+        cout << "sort time " << tm.elapsed() << endl;
     }
 
 private:
@@ -160,9 +170,9 @@ private:
     }
 
     BinaryNode *findMax(BinaryNode *t) {
-        if (t == NULL)
+        if (NULL == t)
             return NULL;
-        if (t->rchild == NULL)
+        if (NULL == t->rchild)
             return t;
         findMax(t->rchild);
     }
@@ -177,16 +187,13 @@ private:
     void insert(const T &el, BinaryNode *&t) {
         if (t == NULL)
             t = new BinaryNode(el);
-        else if (el < t->element)
-            insert(el, t->lchild);
-        else
-            insert(el, t->rchild);
+        else insert(el, t->element > el ? t->lchild : t->rchild);
     }
 
     void remove(const T &el, BinaryNode *&node) {
         if (node == NULL)
             return;
-        if (el < node->element)
+        if (node->element > el)
             remove(el, node->lchild);
         else if (el > node->element)
             remove(el, node->rchild);
@@ -225,8 +232,6 @@ private:
         postorder(t->rchild);
         std::cout << t->element << " ";
     }
-
-
 };
 
 void BinaryTree_Test() {
@@ -259,9 +264,9 @@ void BinaryTree_Test() {
     cout << "test sort\n";
     int a[] = {2, 3, 1, 5, 4};
     bt.sort(a, a + 5);
-    for(auto i:a)
-        cout<<i<<" ";
-    cout<<endl;
+    for (auto i:a)
+        cout << i << " ";
+    cout << endl;
 }
 
 #endif
