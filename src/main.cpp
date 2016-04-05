@@ -95,7 +95,7 @@ void sort_correctness_test() {
     heap_sort2(a[1], a[1] + 10);
     std::sort(a[2], a[2] + 10);
     BinaryTree<int> bt;
-    bt.sort(a[3],a[3]+10);
+    bt.sort(a[3], a[3] + 10);
     print(a[0], a[0] + 10);
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 10; ++j) {
@@ -111,7 +111,7 @@ void sort_correctness_test() {
 
 void sort_speed_test() {
     int num = 4;
-    int size = 3000000;
+    int size = 10000;
     int **a = new int *[num];
     for (int i = 0; i < num; ++i)
         a[i] = new int[size];
@@ -134,8 +134,11 @@ void sort_speed_test() {
 }
 
 int main(int, char **) {
-//    sort_correctness_test();
-//    sort_speed_test();
-    Deque_test();
+//  sort_correctness_test();
+//  sort_speed_test();
+//    Deque_test();
+//    Derived_test();
+    AvlTree_Test();
+    system("pause");
     return 0;
 }

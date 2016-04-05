@@ -9,9 +9,25 @@
 
 using namespace std;
 
+template<class T>
+class AvlTree;
+
+template<class T>
+struct BinaryNode {
+    T element;
+    BinaryNode<T> *lchild;
+    BinaryNode<T> *rchild;
+    int height;
+
+    BinaryNode<T>(T el = T(), BinaryNode<T> *_lchild = NULL, BinaryNode<T> *_rchild = NULL)
+            : element(el), lchild(_lchild), rchild(_rchild), height(0) { }
+};
+
 template<typename T>
 class BinaryTree {
 public:
+    friend class AvlTree<T>;
+
     BinaryTree() : root(NULL) { }
 
     virtual ~BinaryTree() { };
@@ -20,11 +36,11 @@ public:
         return contains(t, root);
     }
 
-    void insert(const T &t) {
+    virtual void insert(const T &t) {
         insert(t, root);
     }
 
-    void remove(const T &el) {
+    virtual void remove(const T &el) {
         remove(el, root);
     }
 
@@ -44,10 +60,10 @@ public:
     }
 
     void preorder_no_recursive() {
-        stack<BinaryNode *> st;
+        stack<BinaryNode<T> *> st;
         st.push(root);
         while (!st.empty()) {
-            BinaryNode *temp = st.top();
+            BinaryNode<T> *temp = st.top();
             st.pop();
             cout << temp->element << " ";
             if (temp->rchild)
@@ -59,8 +75,8 @@ public:
     }
 
     void preorder_no_recursive2() {
-        stack<BinaryNode *> st;
-        BinaryNode *node = root;
+        stack<BinaryNode<T> *> st;
+        BinaryNode<T> *node = root;
         while (!st.empty() || node) {
             while (node) {
                 cout << node->element << " ";
@@ -74,8 +90,8 @@ public:
     }
 
     void inorder_no_recursive() {
-        stack<BinaryNode *> st;
-        BinaryNode *node = root;
+        stack<BinaryNode<T> *> st;
+        BinaryNode<T> *node = root;
         while (!st.empty() || node) {
             while (node) {
                 st.push(node);
@@ -90,11 +106,11 @@ public:
     }
 
     void postorder_no_recursive() {
-        stack<BinaryNode *> st;
+        stack<BinaryNode<T> *> st;
         st.push(root);
-        BinaryNode *preNode = NULL;
+        BinaryNode<T> *preNode = NULL;
         while (!st.empty()) {
-            BinaryNode *node = st.top();
+            BinaryNode<T> *node = st.top();
             if ((NULL == node->lchild && NULL == node->rchild)
                 || (preNode && (node->lchild == preNode || node->rchild == preNode))) {
                 st.pop();
@@ -111,10 +127,10 @@ public:
     }
 
     void level_order() {
-        deque<BinaryNode *> que;
+        deque<BinaryNode<T> *> que;
         que.push_back(root);
         while (!que.empty()) {
-            BinaryNode *node = que.front();
+            BinaryNode<T> *node = que.front();
             cout << node->element << " ";
             que.pop_front();
             if (node->lchild)
@@ -133,8 +149,8 @@ public:
         }
         cout << "insert time " << tm.elapsed() << endl;
         tm.start();
-        BinaryNode *node = bt.root;
-        stack<BinaryNode *> st;
+        BinaryNode<T> *node = bt.root;
+        stack<BinaryNode<T> *> st;
         while (!st.empty() || node) {
             while (node) {
                 st.push(node);
@@ -149,18 +165,9 @@ public:
     }
 
 private:
-    struct BinaryNode {
-        T element;
-        BinaryNode *lchild;
-        BinaryNode *rchild;
+    BinaryNode<T> *root;
 
-        BinaryNode(T el = T(), BinaryNode *_lchild = NULL, BinaryNode *_rchild = NULL)
-                : element(el), lchild(_lchild), rchild(_rchild) { }
-    };
-
-    BinaryNode *root;
-
-    bool contains(T x, BinaryNode *t) const {
+    bool contains(T x, BinaryNode<T> *t) const {
         if (t == NULL)
             return false;
         else if (x < t->element)
@@ -169,7 +176,7 @@ private:
             return contains(x, t->rchild);
     }
 
-    BinaryNode *findMax(BinaryNode *t) {
+    BinaryNode<T> *findMax(BinaryNode<T> *t) {
         if (NULL == t)
             return NULL;
         if (NULL == t->rchild)
@@ -177,20 +184,20 @@ private:
         findMax(t->rchild);
     }
 
-    BinaryNode *findMin(BinaryNode *t) {
+    BinaryNode<T> *findMin(BinaryNode<T> *t) {
         if (t)
             while (t->lchild)
                 t = t->lchild;
         return t;
     }
 
-    void insert(const T &el, BinaryNode *&t) {
+    void insert(const T &el, BinaryNode<T> *&t) {
         if (t == NULL)
-            t = new BinaryNode(el);
+            t = new BinaryNode<T>(el);
         else insert(el, t->element > el ? t->lchild : t->rchild);
     }
 
-    void remove(const T &el, BinaryNode *&node) {
+    void remove(const T &el, BinaryNode<T> *&node) {
         if (node == NULL)
             return;
         if (node->element > el)
@@ -203,13 +210,13 @@ private:
             node->element = findMin(node->rchild)->element;
             remove(node->element, node->rchild);
         } else {
-            BinaryNode *old = node;
+            BinaryNode<T> *old = node;
             node = (node->lchild) ? node->lchild : node->rchild;
             delete old;
         }
     }
 
-    void preorder(BinaryNode *t) {
+    void preorder(BinaryNode<T> *t) {
         if (t == NULL)
             return;
         std::cout << t->element << " ";
@@ -217,7 +224,7 @@ private:
         preorder(t->rchild);
     }
 
-    void inorder(BinaryNode *t) {
+    void inorder(BinaryNode<T> *t) {
         if (t == NULL)
             return;
         inorder(t->lchild);
@@ -225,7 +232,7 @@ private:
         inorder(t->rchild);
     }
 
-    void postorder(BinaryNode *t) {
+    void postorder(BinaryNode<T> *t) {
         if (t == NULL)
             return;
         postorder(t->lchild);
@@ -233,6 +240,84 @@ private:
         std::cout << t->element << " ";
     }
 };
+
+template<class T>
+class AvlTree : public BinaryTree<T> {
+public:
+    int height(BinaryNode<T> *node) {
+        if (node == NULL)
+            return 0;
+        return node->height;
+    }
+
+    void single_right_rotate(BinaryNode<T> *&node) {  //turn right when insert on left
+        BinaryNode<T> *pLeft = node->lchild;
+        node->lchild = pLeft->rchild;
+        pLeft->rchild = node;
+        node = pLeft;
+        pLeft->height = max(height(pLeft->lchild), height(pLeft->rchild)) + 1;
+        node->height = max(height(node->lchild), height(node->rchild)) + 1;
+    }
+
+    void single_left_rotate(BinaryNode<T> *&node) {  //turn left when insert on right
+        BinaryNode<T> *oldNode = node;
+        BinaryNode<T> *pRight = node->rchild;
+        oldNode->rchild = pRight->lchild;
+        pRight->lchild = oldNode;
+        oldNode = pRight;
+        node->height = max(height(node->lchild), height(node->rchild)) + 1;
+        pRight->height = max(height(pRight->lchild), height(pRight->rchild)) + 1;
+    }
+
+    BinaryNode<T> * insert(const T &t, BinaryNode<T> *&node) {
+        if (node == NULL) {
+            BinaryNode<T> * new_node = new BinaryNode<T>(t);
+            return new_node;
+        }
+        else if (t < node->element) {
+            node->lchild =insert(t, node->lchild);
+            if (height(node->lchild) - height(node->rchild) > 1) {  //从插入节点到根节点的路径上可能出现不平衡
+                //insert node on left child's left child;
+                if (t < node->lchild->element) {
+                    single_right_rotate(node);
+                }
+            }
+        }
+        else {
+            node->rchild = insert(t, node->rchild);
+            if (height(node->rchild) - height(node->lchild) > 1) {
+                if (t > node->rchild->element) {
+                    single_left_rotate(node);
+                }
+            }
+        }
+        node->height = std::max(height(node->lchild), height(node->rchild)) + 1;
+        return node;
+    }
+
+public:
+    int height() {
+        return height(this->root);
+    }
+
+    void insert(const T &t) {
+        this->root = insert(t, this->root);
+    }
+};
+
+void AvlTree_Test() {
+    AvlTree<int> at;
+    at.insert(1);
+    cout << "h1 " << at.height() << endl;
+    at.insert(2);
+    cout << "h2 " << at.height() << endl;
+    at.insert(3);
+    cout << "h3 " << at.height() << endl;
+//    at.insert(4);
+
+    cout << "post order\n";
+    at.postorder();
+}
 
 void BinaryTree_Test() {
     BinaryTree<int> bt;

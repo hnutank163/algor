@@ -4,35 +4,34 @@ using namespace std;
 class Base
 {
 public:
-    void m1()
-    {
-        cout << "in base m1\n";
+   void func(){
+       cout<<"in Base func\n";
+   }
+
+    virtual void func(int ){
+        cout<<"in Base virtual func\n";
     }
-    void m2()
-    {
-        cout << "in base m2\n";
-    }
-    void m2(int)
-    {
-        cout << "in base m2(int)\n";
+
+    void func2(int,int ){
+        func();
     }
 };
 
 class Derived :public Base
 {
 public:
-    using Base::m2;
-    void m2()
-    {
-        cout << "int drive m2\n";
+    void func(){
+        Base::func(1);
+        cout<<"in Derived func\n";
     }
 };
 
 void Derived_test()
 {
     Derived d;
-    int x=0;
-    d.m1();
-    d.m2();
-    d.m2(x);
+    d.func();
+
+    Base *b = new Derived();
+    b->func();
+
 }
