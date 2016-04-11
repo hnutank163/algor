@@ -8,7 +8,7 @@
 #include "Stack.hpp"
 #include "BinaryTree.hpp"
 #include "BinaryHeap.hpp"
-#include "Deque.hpp"
+#include "Set.hpp"
 #include "derived.h"
 #include "HashTable.hpp"
 
@@ -138,7 +138,8 @@ int main(int, char **) {
 //  sort_speed_test();
 //    Deque_test();
 //    Derived_test();
-    AvlTree_Test();
+//    AvlTree_Test();
+//    set_test();
     system("pause");
     return 0;
 }
