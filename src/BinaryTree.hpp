@@ -36,6 +36,10 @@ public:
         return contains(t, root);
     }
 
+    BinaryNode<T> *findMin() { return findMin(root); }
+
+    BinaryNode<T> *findMax() { return findMax(root); }
+
     virtual void insert(const T &t) {
         insert(t, root);
     }
@@ -246,11 +250,12 @@ class AvlTree : public BinaryTree<T> {
 public:
     int height(BinaryNode<T> *node) {
         if (node == NULL)
-            return 0;
+            return -1;
         return node->height;
     }
 
     void single_right_rotate(BinaryNode<T> *&node) {  //turn right when insert on left
+        cout << "enter " << __FUNCTION__ << endl;
         BinaryNode<T> *pLeft = node->lchild;
         node->lchild = pLeft->rchild;
         pLeft->rchild = node;
@@ -260,63 +265,119 @@ public:
     }
 
     void single_left_rotate(BinaryNode<T> *&node) {  //turn left when insert on right
-        BinaryNode<T> *oldNode = node;
+        cout << "enter " << __FUNCTION__ << endl;
+        BinaryNode<T> *pNode = node;
         BinaryNode<T> *pRight = node->rchild;
-        oldNode->rchild = pRight->lchild;
-        pRight->lchild = oldNode;
-        oldNode = pRight;
+        pNode->rchild = pRight->lchild;
+        pRight->lchild = pNode;
+
         node->height = max(height(node->lchild), height(node->rchild)) + 1;
         pRight->height = max(height(pRight->lchild), height(pRight->rchild)) + 1;
+        node = pRight;
     }
 
-    BinaryNode<T> * insert(const T &t, BinaryNode<T> *&node) {
+    void insert(const T &t, BinaryNode<T> *&node) {
         if (node == NULL) {
-            BinaryNode<T> * new_node = new BinaryNode<T>(t);
-            return new_node;
+            node = new BinaryNode<T>(t);
         }
         else if (t < node->element) {
-            node->lchild =insert(t, node->lchild);
+            insert(t, node->lchild);
             if (height(node->lchild) - height(node->rchild) > 1) {  //从插入节点到根节点的路径上可能出现不平衡
                 //insert node on left child's left child;
                 if (t < node->lchild->element) {
+                    single_right_rotate(node);
+                } else {
+                    //insert node on left child's right child, we need turn left and turn right
+                    single_left_rotate(node->lchild);
                     single_right_rotate(node);
                 }
             }
         }
         else {
-            node->rchild = insert(t, node->rchild);
+            insert(t, node->rchild);
             if (height(node->rchild) - height(node->lchild) > 1) {
                 if (t > node->rchild->element) {
+                    single_left_rotate(node);
+                } else {
+                    single_right_rotate(node->rchild);
                     single_left_rotate(node);
                 }
             }
         }
         node->height = std::max(height(node->lchild), height(node->rchild)) + 1;
-        return node;
+    }
+
+    void remove(const T &t, BinaryNode<T> *&node) {
+        if (node == NULL)
+            return;
+        if (t < node->element) {
+            remove(t, node->lchild);
+            if (height(node->rchild) - height(node->lchild) > 1) {
+                if (height(node->rchild->lchild) < height(node->rchild->rchild))
+                    single_left_rotate(node);
+                else {
+                    single_right_rotate(node->lchild);
+                    single_left_rotate(node);
+                }
+            } else
+                node->height = max(height(node->lchild), height(node->rchild)) + 1;
+        } else if (t > node->element) {
+            remove(t, node->rchild);
+            if (height(node->lchild) > height(node->rchild)) {
+                if (height(node->lchild->lchild) > height(node->lchild->rchild))
+                    single_right_rotate(node);
+                else {
+                    single_left_rotate(node->rchild);
+                    single_right_rotate(node->lchild);
+                }
+            } else
+                node->height = max(height(node->lchild), height(node->rchild));
+
+        }
+        else {
+            if (node->lchild && node->rchild) {
+                //delete root node
+                if (height(node->lchild) > height(node->rchild)) {
+                    //delete from left-tree
+                    node->element = BinaryTree<T>::findMax(node->lchild)->element;
+                    remove(node->element, node->lchild);
+                }
+                else {
+                    node->element = BinaryTree<T>::findMin(node->rchild)->element;
+                    remove(node->element, node->rchild);
+                }
+            }
+            else {
+                BinaryNode<T> *oldNode = node;
+                node = (node->lchild) ? node->lchild : node->rchild;
+                delete oldNode;
+            }
+        }
+    }
+
+    void remove(const T &t) {
+        remove(t, this->root);
     }
 
 public:
-    int height() {
-        return height(this->root);
-    }
-
     void insert(const T &t) {
-        this->root = insert(t, this->root);
+        insert(t, this->root);
     }
 };
 
 void AvlTree_Test() {
     AvlTree<int> at;
     at.insert(1);
-    cout << "h1 " << at.height() << endl;
     at.insert(2);
-    cout << "h2 " << at.height() << endl;
     at.insert(3);
-    cout << "h3 " << at.height() << endl;
-//    at.insert(4);
-
+    at.insert(4);
+    at.remove(1);
     cout << "post order\n";
     at.postorder();
+    cout << "inorder\n";
+    at.inorder();
+    cout << "pre order\n";
+    at.preorder();
 }
 
 void BinaryTree_Test() {
