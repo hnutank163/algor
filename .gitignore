@@ -1,6 +1,7 @@
 a.out
 .idea/*
 win32/*
+build/*
 bin/*
 !win32/win32/win32.vcxproj
 !win32/win32/win32.vcxproj.filters
