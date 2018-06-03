@@ -14,7 +14,7 @@ struct ringbuf_st
     char *  buf;
 };
 
-ringbuf * ringbuf_new(size_t size)
+ringbuf * ringbuf_new(unsigned int size)
 {
     ringbuf *rb = (ringbuf *)malloc(sizeof(ringbuf));
 
@@ -22,7 +22,7 @@ ringbuf * ringbuf_new(size_t size)
         return NULL;
 
     rb->capacity = size + 1; //avoid readptr == writeptr
-    rb->buf = (char *) malloc(rb->capacity);
+    rb->buf = (char *)malloc(rb->capacity);
     if (rb->buf == NULL)
     {
         free(rb);
@@ -45,7 +45,7 @@ void ringbuf_free(ringbuf *rb)
     }
 }
 
-size_t ringbuf_put(ringbuf *rb, void *data, size_t size)
+unsigned int ringbuf_put(ringbuf *rb, const void *data, unsigned int size)
 {
     assert(rb && data);
 
@@ -64,7 +64,7 @@ size_t ringbuf_put(ringbuf *rb, void *data, size_t size)
         if (front_size)
         {
             memcpy(rb->write_ptr, data, back_size);
-            memcpy(rb->head, (char *)data+back_size, front_size);
+            memcpy(rb->head, (unsigned char *)data+back_size, front_size);
             rb->write_ptr = rb->head +front_size;
         }
         else
@@ -89,7 +89,7 @@ size_t ringbuf_put(ringbuf *rb, void *data, size_t size)
     return size;
 }
 
-size_t ringbuf_get(ringbuf *rb, void *data, size_t size)
+unsigned int ringbuf_get(ringbuf *rb, void *data, unsigned int size)
 {
     const char *wptr = rb->write_ptr; //avoid another thread is write
 
@@ -114,7 +114,7 @@ size_t ringbuf_get(ringbuf *rb, void *data, size_t size)
         if (front_size)
         {
             memcpy(data, rb->read_ptr, back_size);
-            memcpy((char *)data + back_size, rb->head, front_size);
+            memcpy((unsigned char *)data + back_size, rb->head, front_size);
             rb->read_ptr = rb->head + front_size;
         }
         else

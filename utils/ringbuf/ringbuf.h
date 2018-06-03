@@ -7,9 +7,9 @@
 struct ringbuf_st;
 typedef struct ringbuf_st ringbuf;
 
-ringbuf * ringbuf_new(size_t size);
+ringbuf * ringbuf_new(unsigned int size);
 void ringbuf_free(ringbuf *rb);
-size_t ringbuf_put(ringbuf *rb, void *data, size_t size);
-size_t ringbuf_get(ringbuf *rb, void *data, size_t size);
+unsigned int ringbuf_put(ringbuf *rb, const void *data, unsigned int size);
+unsigned int ringbuf_get(ringbuf *rb, void *data, unsigned int size);
 
 #endif /* ifndef _RING_BUF_H_ */

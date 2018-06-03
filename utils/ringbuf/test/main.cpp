@@ -3,7 +3,7 @@
 
 TEST(ringbuf, malloctest)
 {
-    ringbuf *rb = ringbuf_new((size_t)1024*1024*1024*16);
+    ringbuf *rb = ringbuf_new(7);
     EXPECT_TRUE(rb == NULL);
     rb = ringbuf_new(8);
     EXPECT_TRUE(rb != NULL);
@@ -24,7 +24,7 @@ TEST(ringbuf, normal)
     ringbuf *rb = ringbuf_new(8);
 
     char buf[8] = {0};
-    size_t sz = ringbuf_put(rb, (void *)"abc", 3);
+    size_t sz = ringbuf_put(rb, "abc", 3);
     EXPECT_EQ(sz, 3);
 
     sz = ringbuf_get(rb, buf, 2);
@@ -48,13 +48,13 @@ TEST(ringbuf, write_too_much)
     char buf[16] = {0};
 
     const char *p = "1234567890";
-    size_t sz = ringbuf_put(rb, (void *)p, strlen(p));
+    unsigned sz = ringbuf_put(rb, p, strlen(p));
     EXPECT_EQ(sz, 8);
     sz = ringbuf_get(rb, buf, 2);
     EXPECT_EQ(sz, 2);
     EXPECT_STREQ(buf, "12");
 
-    sz = ringbuf_put(rb, (void *)p, strlen(p));
+    sz = ringbuf_put(rb, p, strlen(p));
     EXPECT_EQ(sz, 2);
 
     sz = ringbuf_get(rb, buf, 16);
@@ -72,13 +72,13 @@ TEST(ringbuf,  read_too_much)
     EXPECT_EQ(sz, 0);
     EXPECT_STREQ(buf, "");
 
-    sz = ringbuf_put(rb, (void *)"123", 2);
+    sz = ringbuf_put(rb, "123", 2);
     EXPECT_EQ(sz, 2);
     sz = ringbuf_get(rb, buf, 3);
     EXPECT_EQ(sz, 2);
     EXPECT_STREQ(buf, "12");
 
-    sz = ringbuf_put(rb, (void *)p, strlen(p));
+    sz = ringbuf_put(rb, p, strlen(p));
     EXPECT_EQ(sz, 8);
 
     sz = ringbuf_get(rb, buf, 16);
